@@ -1,4 +1,5 @@
 ﻿using ECommerce.Application.Abstract;
+using ECommerce.Application.Repositories.Abstracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,17 +9,25 @@ namespace ECommerce.WebAPI.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private  IProductService _productService;
+        private readonly IProductWriteRepository _productWriteRepository;
+        private readonly IProductReadRepository _productReadRepository;
 
-        public ProductsController(IProductService productService)
+        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository)
         {
-            _productService = productService;
+            _productWriteRepository = productWriteRepository;
+            _productReadRepository = productReadRepository;
         }
+
         [HttpGet]
-        public IActionResult getAll()
+        public async void Get()
         {
-            var products = _productService.getAll();
-            return Ok(products);
+            _productWriteRepository.AddRangeAsycn(new()
+            {
+                new() {Id= 1,Name="Bardak",Price=100,Stock=50,CreatedDate=DateTime.Now},
+                 new() {Id= 2,Name="Bardak 1",Price=150,Stock=20,CreatedDate=DateTime.Now},
+                  new() {Id= 3,Name="Bardak 2",Price=200,Stock=57,CreatedDate=DateTime.Now},
+            });
+            await _productWriteRepository.SaveAsycn();
         }
     }
 }
