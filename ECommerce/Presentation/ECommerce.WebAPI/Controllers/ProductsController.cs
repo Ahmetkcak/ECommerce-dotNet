@@ -21,11 +21,11 @@ namespace ECommerce.WebAPI.Controllers
         [HttpGet]
         public async void Get()
         {
-            _productWriteRepository.AddRangeAsycn(new()
+            _ = _productWriteRepository.AddRangeAsycn(new()
             {
-                new() {Id= 1,Name="Bardak",Price=100,Stock=50,CreatedDate=DateTime.Now},
-                 new() {Id= 2,Name="Bardak 1",Price=150,Stock=20,CreatedDate=DateTime.Now},
-                  new() {Id= 3,Name="Bardak 2",Price=200,Stock=57,CreatedDate=DateTime.Now},
+                new() {Id= 1,Name="Bardak",Price=100,Stock=50,CreatedDate=DateTime.UtcNow},
+                 new() {Id= 2,Name="Bardak 1",Price=150,Stock=20,CreatedDate=DateTime.UtcNow},
+                  new() {Id= 3,Name="Bardak 2",Price=200,Stock=57,CreatedDate=DateTime.UtcNow},
             });
             await _productWriteRepository.SaveAsycn();
         }
