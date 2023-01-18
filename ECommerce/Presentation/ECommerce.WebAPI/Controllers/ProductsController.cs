@@ -37,5 +37,12 @@ namespace ECommerce.WebAPI.Controllers
             Product product = await _productReadRepository.GetByIdAsycn(id);
             return Ok(product);
         }
+
+        [HttpPost]
+        public async Task Add()
+        {
+            _ = await _productWriteRepository.AddAsycn(new() { Id = 7, Name = "Bardak 7", Price = 100, Stock = 10, CreatedDate = DateTime.UtcNow });
+            _ = _productWriteRepository.SaveAsycn();
+        }
     }
 }

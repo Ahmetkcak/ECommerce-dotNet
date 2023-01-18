@@ -10,5 +10,6 @@ namespace ECommerce.Domain.Entities.Common
     {
         public int Id { get; set; }
         public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
     }
 }
