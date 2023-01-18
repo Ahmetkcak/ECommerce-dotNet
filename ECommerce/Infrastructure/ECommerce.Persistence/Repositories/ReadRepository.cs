@@ -20,15 +20,39 @@ namespace ECommerce.Persistence.Repositories
         }
         public DbSet<T> Table => _context.Set<T>();
 
-        public IQueryable<T> GetAll()
-            => Table;
-        public async Task<T> GetByIdAsycn(int id)
-            //=>await Table.FirstOrDefaultAsync(x => x.Id == id);
-            => await Table.FindAsync(id);
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression)
-            =>await Table.FirstOrDefaultAsync(expression);
+        public IQueryable<T> GetAll(bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if (!tracking)
+                query = query.AsNoTracking();
+            return query;
+            
+        }
+            
+        public async Task<T> GetByIdAsycn(int id, bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if(!tracking) 
+                query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(x => x.Id == id);
+            
+        }
+           
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression, bool tracking = true)
+        {
+            var query = Table.AsQueryable();
+            if(!tracking)
+                query = Table.AsNoTracking();
+            return await query.FirstOrDefaultAsync(expression);
+        }
 
-        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression)
-            =>Table.Where(expression);
+        public IQueryable<T> GetWhere(Expression<Func<T, bool>> expression, bool tracking = true)
+        {
+            var query = Table.Where(expression);
+            if (!tracking)
+                query = query.AsNoTracking();
+            return query;
+            
+        }
     }
 }
