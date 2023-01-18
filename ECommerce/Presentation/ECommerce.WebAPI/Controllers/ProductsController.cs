@@ -1,5 +1,6 @@
 ﻿using ECommerce.Application.Abstract;
 using ECommerce.Application.Repositories.Abstracts;
+using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,15 +20,22 @@ namespace ECommerce.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async void Get()
+        public async Task Get()
         {
             _ = _productWriteRepository.AddRangeAsycn(new()
             {
-                new() {Id= 1,Name="Bardak",Price=100,Stock=50,CreatedDate=DateTime.UtcNow},
-                 new() {Id= 2,Name="Bardak 1",Price=150,Stock=20,CreatedDate=DateTime.UtcNow},
-                  new() {Id= 3,Name="Bardak 2",Price=200,Stock=57,CreatedDate=DateTime.UtcNow},
+                new() {Id= 4,Name="Bardak",Price=100,Stock=50,CreatedDate=DateTime.UtcNow},
+                 new() {Id= 5,Name="Bardak 1",Price=150,Stock=20,CreatedDate=DateTime.UtcNow},  
+                  new() {Id= 6,Name="Bardak 2",Price=200,Stock=57,CreatedDate=DateTime.UtcNow},
             });
             await _productWriteRepository.SaveAsycn();
+        }
+
+        [HttpGet("getById")]
+        public async Task<IActionResult> Get(int id)
+        {
+            Product product = await _productReadRepository.GetByIdAsycn(id);
+            return Ok(product);
         }
     }
 }

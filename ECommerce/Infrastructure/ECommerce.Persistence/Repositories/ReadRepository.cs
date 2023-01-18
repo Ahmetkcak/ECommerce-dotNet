@@ -21,10 +21,10 @@ namespace ECommerce.Persistence.Repositories
         public DbSet<T> Table => _context.Set<T>();
 
         public IQueryable<T> GetAll()
-            => Table;      
+            => Table;
         public async Task<T> GetByIdAsycn(int id)
-            =>await Table.FirstOrDefaultAsync(x => x.Id == id);
-
+            //=>await Table.FirstOrDefaultAsync(x => x.Id == id);
+            => await Table.FindAsync(id);
         public async Task<T> GetSingleAsync(Expression<Func<T, bool>> expression)
             =>await Table.FirstOrDefaultAsync(expression);
 
