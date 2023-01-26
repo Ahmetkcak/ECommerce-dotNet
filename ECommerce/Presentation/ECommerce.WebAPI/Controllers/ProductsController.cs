@@ -1,8 +1,10 @@
 ﻿using ECommerce.Application.Abstract;
 using ECommerce.Application.Repositories.Abstracts;
+using ECommerce.Application.ViewModels.Products;
 using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace ECommerce.WebAPI.Controllers
 {
@@ -20,29 +22,47 @@ namespace ECommerce.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task Get()
+        public async Task<IActionResult> Get()
         {
-            _ = _productWriteRepository.AddRangeAsycn(new()
-            {
-                new() {Id= 4,Name="Bardak",Price=100,Stock=50,CreatedDate=DateTime.UtcNow},
-                 new() {Id= 5,Name="Bardak 1",Price=150,Stock=20,CreatedDate=DateTime.UtcNow},  
-                  new() {Id= 6,Name="Bardak 2",Price=200,Stock=57,CreatedDate=DateTime.UtcNow},
-            });
-            await _productWriteRepository.SaveAsycn();
+            return Ok(_productReadRepository.GetAll(false));
         }
 
-        [HttpGet("getById")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            Product product = await _productReadRepository.GetByIdAsycn(id);
-            return Ok(product);
+            return Ok(await _productReadRepository.GetByIdAsycn(id, false));
         }
 
         [HttpPost]
-        public async Task Add()
+        public async Task<IActionResult> Post(VM_Create_Product model)
         {
-            _ = await _productWriteRepository.AddAsycn(new() { Id = 7, Name = "Bardak 7", Price = 100, Stock = 10, CreatedDate = DateTime.UtcNow });
-            _ = _productWriteRepository.SaveAsycn();
+            await _productWriteRepository.AddAsycn(new()
+            {
+                Name = model.Name,
+                Price = model.Price,
+                Stock = model.Stock
+            });
+            await _productWriteRepository.SaveAsycn();
+            return StatusCode((int)HttpStatusCode.Created);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(VM_Update_Product model)
+        {
+            Product product = await _productReadRepository.GetByIdAsycn(model.Id);
+            product.Stock = model.Stock;
+            product.Name = model.Name;
+            product.Price = model.Price;
+            await _productWriteRepository.SaveAsycn();
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _productWriteRepository.RemoveAsycn(id);
+            await _productWriteRepository.SaveAsycn();
+            return Ok();
         }
     }
 }
