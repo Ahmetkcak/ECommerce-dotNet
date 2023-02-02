@@ -1,6 +1,7 @@
 ﻿using ECommerce.Application.Abstract;
 using ECommerce.Application.Repositories.Abstracts;
 using ECommerce.Application.RequestParamters;
+using ECommerce.Application.Services;
 using ECommerce.Application.ViewModels.Products;
 using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -15,13 +16,14 @@ namespace ECommerce.WebAPI.Controllers
     {
         private readonly IProductWriteRepository _productWriteRepository;
         private readonly IProductReadRepository _productReadRepository;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IFileService _fileService;
 
-        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository,IWebHostEnvironment webHostEnvironment)
+
+        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IFileService fileService)
         {
             _productWriteRepository = productWriteRepository;
             _productReadRepository = productReadRepository;
-            _webHostEnvironment = webHostEnvironment;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -82,20 +84,8 @@ namespace ECommerce.WebAPI.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Upload()
         {
-            Random random = new();
-            string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "resource/productImages");
-
-            if(!Directory.Exists(uploadPath))   
-                Directory.CreateDirectory(uploadPath);
-            foreach (var file in Request.Form.Files)
-            {
-                string fullPath = Path.Combine(uploadPath, $"{random.Next()}{Path.GetExtension(file.Name)}");
-
-                using FileStream fileStream = new(fullPath, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024, useAsync: false);
-                await file.CopyToAsync(fileStream);
-                await fileStream.FlushAsync();
-            }
-        return Ok();
+            await _fileService.UploadAsycn("resource/productImages", Request.Form.Files);
+            return Ok();
         }
     }
 }
