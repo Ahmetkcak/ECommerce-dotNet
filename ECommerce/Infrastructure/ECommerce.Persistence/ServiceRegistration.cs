@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using ECommerce.Persistence.Configurations;
 using ECommerce.Application.Repositories.Abstracts;
 using ECommerce.Persistence.Repositories;
+using ECommerce.Application.Services;
+using ECommerce.Persistence.Repositories.File;
 
 namespace ECommerce.Persistence
 {
@@ -27,8 +29,17 @@ namespace ECommerce.Persistence
             services.AddScoped<IProductReadRepository, ProductReadRepository>();
             services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
 
-            services.AddSingleton<IOrderReadRepository, OrderReadRepository>();
+            services.AddScoped<IOrderReadRepository, OrderReadRepository>();
             services.AddScoped<IOrderWriteRepository, OrderWriteRepository>();
+
+            services.AddSingleton<IFileReadRepository, FileReadRepository>();
+            services.AddScoped<IFileWriteRepository, FileWriteRepository>();
+
+            services.AddSingleton<IProductImageReadRepository, ProductImageReadRepository>();
+            services.AddScoped<IProductImageWriteRepository, ProductImageWriteRepository>();
+
+            services.AddSingleton<IInvoiceFileReadRepository, InvoiceFileReadRepository>();
+            services.AddScoped<IInvoiceFileWriteRepository, InvoiceFileWriteRepository>();
         }
     }
 }

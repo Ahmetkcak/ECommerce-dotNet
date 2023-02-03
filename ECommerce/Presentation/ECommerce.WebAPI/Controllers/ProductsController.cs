@@ -7,6 +7,7 @@ using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using File = ECommerce.Domain.Entities.File;
 
 namespace ECommerce.WebAPI.Controllers
 {
@@ -17,13 +18,25 @@ namespace ECommerce.WebAPI.Controllers
         private readonly IProductWriteRepository _productWriteRepository;
         private readonly IProductReadRepository _productReadRepository;
         private readonly IFileService _fileService;
+        readonly IFileWriteRepository _fileWriteRepository;
+        readonly IFileReadRepository _fileReadRepository;
+        readonly IProductImageReadRepository _productImageFileReadRepository;
+        readonly IProductImageWriteRepository _productImageFileWriteRepository;
+        readonly IInvoiceFileReadRepository _invoiceFileReadRepository;
+        readonly IInvoiceFileWriteRepository _invoiceFileWriteRepository;
 
 
-        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IFileService fileService)
+        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IFileService fileService, IFileWriteRepository fileWriteRepository, IFileReadRepository fileReadRepository, IProductImageReadRepository productImageFileReadRepository, IProductImageWriteRepository productImageFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository)
         {
             _productWriteRepository = productWriteRepository;
             _productReadRepository = productReadRepository;
             _fileService = fileService;
+            _fileWriteRepository = fileWriteRepository;
+            _fileReadRepository = fileReadRepository;
+            _productImageFileReadRepository = productImageFileReadRepository;
+            _productImageFileWriteRepository = productImageFileWriteRepository;
+            _invoiceFileReadRepository = invoiceFileReadRepository;
+            _invoiceFileWriteRepository = invoiceFileWriteRepository;
         }
 
         [HttpGet]
@@ -84,7 +97,33 @@ namespace ECommerce.WebAPI.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Upload()
         {
-            await _fileService.UploadAsycn("resource/productImages", Request.Form.Files);
+            //var datas = await _fileService.UploadAsycn("resource/productImages", Request.Form.Files);
+            //await _productWriteRepository.AddRangeAsycn(datas.Select(d => new File()
+            //{
+            //    FileName = d.fileName,
+            //    Path = d.path
+            //}).ToList());
+            //await _productWriteRepository.SaveAsycn();
+
+
+            //var datas = await _fileService.UploadAsycn("resource/invoiceImages", Request.Form.Files);
+            //await _invoiceFileWriteRepository.AddRangeAsycn(datas.Select(d => new InvoiceFile()
+            //{
+            //    FileName = d.fileName,
+            //    Path = d.path,
+            //    Price = 159
+            //}).ToList());
+            //await _invoiceFileWriteRepository.SaveAsycn();
+
+
+            var datas = await _fileService.UploadAsycn("resource/file", Request.Form.Files);
+            await _fileWriteRepository.AddRangeAsycn(datas.Select(d => new File()
+            {
+                FileName = d.fileName,
+                Path = d.path
+            }).ToList());
+            await _fileWriteRepository.SaveAsycn();
+
             return Ok();
         }
     }
