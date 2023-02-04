@@ -1,7 +1,7 @@
-﻿using ECommerce.Application.Abstract;
+﻿    using ECommerce.Application.Abstract;
+using ECommerce.Application.Abstractions.Storage;
 using ECommerce.Application.Repositories.Abstracts;
 using ECommerce.Application.RequestParamters;
-using ECommerce.Application.Services;
 using ECommerce.Application.ViewModels.Products;
 using ECommerce.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -17,26 +17,26 @@ namespace ECommerce.WebAPI.Controllers
     {
         private readonly IProductWriteRepository _productWriteRepository;
         private readonly IProductReadRepository _productReadRepository;
-        private readonly IFileService _fileService;
         readonly IFileWriteRepository _fileWriteRepository;
         readonly IFileReadRepository _fileReadRepository;
         readonly IProductImageReadRepository _productImageFileReadRepository;
         readonly IProductImageWriteRepository _productImageFileWriteRepository;
         readonly IInvoiceFileReadRepository _invoiceFileReadRepository;
         readonly IInvoiceFileWriteRepository _invoiceFileWriteRepository;
+        readonly IStorageService _storageService;
 
 
-        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IFileService fileService, IFileWriteRepository fileWriteRepository, IFileReadRepository fileReadRepository, IProductImageReadRepository productImageFileReadRepository, IProductImageWriteRepository productImageFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository)
+        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IFileWriteRepository fileWriteRepository, IFileReadRepository fileReadRepository, IProductImageReadRepository productImageFileReadRepository, IProductImageWriteRepository productImageFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IStorageService storageService)
         {
             _productWriteRepository = productWriteRepository;
             _productReadRepository = productReadRepository;
-            _fileService = fileService;
             _fileWriteRepository = fileWriteRepository;
             _fileReadRepository = fileReadRepository;
             _productImageFileReadRepository = productImageFileReadRepository;
             _productImageFileWriteRepository = productImageFileWriteRepository;
             _invoiceFileReadRepository = invoiceFileReadRepository;
             _invoiceFileWriteRepository = invoiceFileWriteRepository;
+            _storageService = storageService;
         }
 
         [HttpGet]
@@ -97,13 +97,17 @@ namespace ECommerce.WebAPI.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Upload()
         {
-            //var datas = await _fileService.UploadAsycn("resource/productImages", Request.Form.Files);
-            //await _productWriteRepository.AddRangeAsycn(datas.Select(d => new File()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.path
-            //}).ToList());
-            //await _productWriteRepository.SaveAsycn();
+
+            var datas = await _storageService.UploadAsycn("resource/files", Request.Form.Files);
+
+           
+            await _productImageFileWriteRepository.AddRangeAsycn(datas.Select(d => new ProductImage()
+            {
+                FileName = d.fileName,
+                Path = d.pathOrContainerName,
+                Storage = _storageService.StorageName   
+            }).ToList());
+            await _productWriteRepository.SaveAsycn();
 
 
             //var datas = await _fileService.UploadAsycn("resource/invoiceImages", Request.Form.Files);
@@ -116,13 +120,13 @@ namespace ECommerce.WebAPI.Controllers
             //await _invoiceFileWriteRepository.SaveAsycn();
 
 
-            var datas = await _fileService.UploadAsycn("resource/file", Request.Form.Files);
-            await _fileWriteRepository.AddRangeAsycn(datas.Select(d => new File()
-            {
-                FileName = d.fileName,
-                Path = d.path
-            }).ToList());
-            await _fileWriteRepository.SaveAsycn();
+            //var datas = await _fileService.UploadAsycn("resource/file", Request.Form.Files);
+            //await _fileWriteRepository.AddRangeAsycn(datas.Select(d => new File()
+            //{
+            //    FileName = d.fileName,
+            //    Path = d.path
+            //}).ToList());
+            //await _fileWriteRepository.SaveAsycn();
 
             return Ok();
         }

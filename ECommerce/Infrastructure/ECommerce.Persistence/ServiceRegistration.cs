@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using ECommerce.Persistence.Configurations;
 using ECommerce.Application.Repositories.Abstracts;
 using ECommerce.Persistence.Repositories;
-using ECommerce.Application.Services;
 using ECommerce.Persistence.Repositories.File;
 
 namespace ECommerce.Persistence
