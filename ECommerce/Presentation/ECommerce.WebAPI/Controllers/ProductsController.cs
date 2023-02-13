@@ -95,39 +95,21 @@ namespace ECommerce.WebAPI.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload()
+        public async Task<IActionResult> Upload(int id)
         {
+            List<(string fileName,string pathOrContainerName)> result =  await _storageService.UploadAsycn("photo-images", Request.Form.Files);
 
-            var datas = await _storageService.UploadAsycn("resource/files", Request.Form.Files);
+            Product product = await _productReadRepository.GetByIdAsycn(id);
 
-           
-            await _productImageFileWriteRepository.AddRangeAsycn(datas.Select(d => new ProductImage()
+           await _productImageFileWriteRepository.AddRangeAsycn(result.Select(r => new ProductImage
             {
-                FileName = d.fileName,
-                Path = d.pathOrContainerName,
-                Storage = _storageService.StorageName   
+               FileName = r.fileName,
+               Path= r.pathOrContainerName,
+               Storage = _storageService.StorageName,
+               Products = new List<Product>() { product }
             }).ToList());
-            await _productWriteRepository.SaveAsycn();
 
-
-            //var datas = await _fileService.UploadAsycn("resource/invoiceImages", Request.Form.Files);
-            //await _invoiceFileWriteRepository.AddRangeAsycn(datas.Select(d => new InvoiceFile()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.path,
-            //    Price = 159
-            //}).ToList());
-            //await _invoiceFileWriteRepository.SaveAsycn();
-
-
-            //var datas = await _fileService.UploadAsycn("resource/file", Request.Form.Files);
-            //await _fileWriteRepository.AddRangeAsycn(datas.Select(d => new File()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.path
-            //}).ToList());
-            //await _fileWriteRepository.SaveAsycn();
-
+            await _productImageFileWriteRepository.SaveAsycn();
             return Ok();
         }
     }

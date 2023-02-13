@@ -3,6 +3,7 @@ using System;
 using ECommerce.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ECommerce.Persistence.Migrations
 {
     [DbContext(typeof(ECommerceDbContext))]
-    partial class ECommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230212172826_mic_5")]
+    partial class mic5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,21 +160,6 @@ namespace ECommerce.Persistence.Migrations
                     b.ToTable("OrderProduct");
                 });
 
-            modelBuilder.Entity("ProductProductImage", b =>
-                {
-                    b.Property<int>("ProductImagesId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ProductImagesId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("ProductProductImage");
-                });
-
             modelBuilder.Entity("ECommerce.Domain.Entities.InvoiceFile", b =>
                 {
                     b.HasBaseType("ECommerce.Domain.Entities.File");
@@ -185,6 +173,11 @@ namespace ECommerce.Persistence.Migrations
             modelBuilder.Entity("ECommerce.Domain.Entities.ProductImage", b =>
                 {
                     b.HasBaseType("ECommerce.Domain.Entities.File");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("ProductId");
 
                     b.HasDiscriminator().HasValue("ProductImage");
                 });
@@ -215,24 +208,25 @@ namespace ECommerce.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProductProductImage", b =>
+            modelBuilder.Entity("ECommerce.Domain.Entities.ProductImage", b =>
                 {
-                    b.HasOne("ECommerce.Domain.Entities.ProductImage", null)
-                        .WithMany()
-                        .HasForeignKey("ProductImagesId")
+                    b.HasOne("ECommerce.Domain.Entities.Product", "Product")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ECommerce.Domain.Entities.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("ECommerce.Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("ECommerce.Domain.Entities.Product", b =>
+                {
+                    b.Navigation("ProductImages");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Domain.Entities
+namespace ECommerce.Application.Abstractions.Storage.Azure
 {
-    public class ProductImage : File
+    public interface IAzureStorage : IStorage
     {
-        public ICollection<Product> Products { get; set; }
     }
 }
