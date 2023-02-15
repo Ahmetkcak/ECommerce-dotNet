@@ -1,3 +1,4 @@
+using ECommerce.Application;
 using ECommerce.Application.Validators.Products;
 using ECommerce.Infrastructure;
 using ECommerce.Infrastructure.Filters;
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();
+builder.Services.AddApplicationServices();
 
 //builder.Services.AddStorage<LocalStorage>();
 builder.Services.AddStorage<AzureStorage>();
