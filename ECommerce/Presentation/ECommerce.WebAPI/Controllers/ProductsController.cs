@@ -1,5 +1,4 @@
-﻿using ECommerce.Application.Abstract;
-using ECommerce.Application.Abstractions.Storage;
+﻿using ECommerce.Application.Abstractions.Storage;
 using ECommerce.Application.Features.Commands.Product.CreateProduct;
 using ECommerce.Application.Features.Commands.Product.DeleteProduct;
 using ECommerce.Application.Features.Commands.Product.UpdateProduct;
