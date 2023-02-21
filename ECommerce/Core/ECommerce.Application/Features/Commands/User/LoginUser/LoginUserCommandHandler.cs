@@ -1,4 +1,6 @@
-﻿using ECommerce.Application.Exceptions;
+﻿using ECommerce.Application.Abstractions.Token;
+using ECommerce.Application.DTOs;
+using ECommerce.Application.Exceptions;
 using ECommerce.Domain.Entities.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -14,11 +16,13 @@ namespace ECommerce.Application.Features.Commands.User.LoginUser
     {
         readonly UserManager<Domain.Entities.Identity.User> _userManager;
         readonly SignInManager<Domain.Entities.Identity.User> _signInManager;
+        readonly ITokenHandler _tokenHandler;
 
-        public LoginUserCommandHandler(UserManager<Domain.Entities.Identity.User> userManager, SignInManager<Domain.Entities.Identity.User> signInManager)
+        public LoginUserCommandHandler(UserManager<Domain.Entities.Identity.User> userManager, SignInManager<Domain.Entities.Identity.User> signInManager, ITokenHandler tokenHandler)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _tokenHandler = tokenHandler;
         }
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
@@ -28,15 +32,24 @@ namespace ECommerce.Application.Features.Commands.User.LoginUser
                 user = await _userManager.FindByEmailAsync(request.UsernameOrMail);
 
             if (user == null)
-                throw new NotFounUserException("Kullanıcı adı veya şifre hatalı");
+                throw new NotFounUserException();
 
             SignInResult result =  await _signInManager.CheckPasswordSignInAsync(user,request.Password,false);
             if (result.Succeeded)
             {
-                //Yetkiler
+                Token token =_tokenHandler.CreateAccessToken(5);
+                return new LoginUserSuccessCommandResponse()
+                {
+                    Token = token
+                };
             }
+            //return new LoginUserErrorCommandResponse()
+            //{
+            //    Message = "Kullanıcı adı veya şifre hatalı"
+            //};
 
-            return new();
+            throw new AuthenticationErrorException();
+
         }
     }
 }

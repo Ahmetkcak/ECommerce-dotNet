@@ -12,16 +12,17 @@ using ECommerce.Application.RequestParamters;
 using ECommerce.Application.ViewModels.Products;
 using ECommerce.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
-using File = ECommerce.Domain.Entities.File;
 
 namespace ECommerce.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes ="Admin")]
     public class ProductsController : ControllerBase
     {
 
