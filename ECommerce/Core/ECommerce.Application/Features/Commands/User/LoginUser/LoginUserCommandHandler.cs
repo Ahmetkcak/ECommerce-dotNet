@@ -1,4 +1,5 @@
-﻿using ECommerce.Application.Abstractions.Token;
+﻿using ECommerce.Application.Abstractions.Services;
+using ECommerce.Application.Abstractions.Token;
 using ECommerce.Application.DTOs;
 using ECommerce.Application.Exceptions;
 using ECommerce.Domain.Entities.Identity;
@@ -14,42 +15,20 @@ namespace ECommerce.Application.Features.Commands.User.LoginUser
 {
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, LoginUserCommandResponse>
     {
-        readonly UserManager<Domain.Entities.Identity.User> _userManager;
-        readonly SignInManager<Domain.Entities.Identity.User> _signInManager;
-        readonly ITokenHandler _tokenHandler;
+        readonly IAuthService _authService;
 
-        public LoginUserCommandHandler(UserManager<Domain.Entities.Identity.User> userManager, SignInManager<Domain.Entities.Identity.User> signInManager, ITokenHandler tokenHandler)
+        public LoginUserCommandHandler(IAuthService authService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _tokenHandler = tokenHandler;
+            _authService = authService;
         }
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
         {
-            Domain.Entities.Identity.User user = await _userManager.FindByNameAsync(request.UsernameOrMail);
-            if (user == null)
-                user = await _userManager.FindByEmailAsync(request.UsernameOrMail);
-
-            if (user == null)
-                throw new NotFounUserException();
-
-            SignInResult result =  await _signInManager.CheckPasswordSignInAsync(user,request.Password,false);
-            if (result.Succeeded)
+            var token = await _authService.LoginAsycn(request.UsernameOrMail, request.Password,15);
+            return new LoginUserSuccessCommandResponse()
             {
-                Token token =_tokenHandler.CreateAccessToken(5);
-                return new LoginUserSuccessCommandResponse()
-                {
-                    Token = token
-                };
-            }
-            //return new LoginUserErrorCommandResponse()
-            //{
-            //    Message = "Kullanıcı adı veya şifre hatalı"
-            //};
-
-            throw new AuthenticationErrorException();
-
+                Token = token
+            };
         }
     }
 }

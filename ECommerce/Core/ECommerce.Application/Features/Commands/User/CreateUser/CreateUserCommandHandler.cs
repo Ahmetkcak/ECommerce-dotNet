@@ -1,4 +1,6 @@
-﻿using ECommerce.Application.Exceptions;
+﻿using ECommerce.Application.Abstractions.Services;
+using ECommerce.Application.DTOs.User;
+using ECommerce.Application.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -11,30 +13,29 @@ namespace ECommerce.Application.Features.Commands.User.CreateUser
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
     {
-        readonly UserManager<Domain.Entities.Identity.User> _userManager;
+        readonly IUserService _userService;
 
-        public CreateUserCommandHandler(UserManager<Domain.Entities.Identity.User> userManager)
+        public CreateUserCommandHandler(IUserService userService)
         {
-            _userManager = userManager;
+            _userService = userService;
         }
 
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
         {
-            IdentityResult result = await _userManager.CreateAsync(new()
+            CreateUserResponse response = await _userService.CreateAsync(new()
             {
-                Name = request.Name,
-                Surname = request.Surname,
-                UserName = request.Username,
                 Email = request.Email,
-            }, request.Password);
+                Surname = request.Surname,
+                Name = request.Name,
+                Password = request.Password,
+                Username = request.Username
+            });
 
-            CreateUserCommandResponse response = new() { Succeded = result.Succeeded};
-            if (result.Succeeded)
-                response.Message = "Kullanıcı oluşturuldu";
-            else
-                foreach (var error in result.Errors)
-                    response.Message += $"{error.Code} - {error.Description}";
-            return response;
+            return new()
+            {
+                Message = response.Message,
+                Succeded = response.Succeded,
+            };
         }
     }
 }

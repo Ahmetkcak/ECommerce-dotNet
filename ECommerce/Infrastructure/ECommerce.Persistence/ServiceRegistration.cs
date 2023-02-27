@@ -11,6 +11,9 @@ using ECommerce.Application.Repositories.Abstracts;
 using ECommerce.Persistence.Repositories;
 using ECommerce.Persistence.Repositories.File;
 using ECommerce.Domain.Entities.Identity;
+using ECommerce.Application.Abstractions.Services;
+using ECommerce.Persistence.Services;
+using ECommerce.Application.Abstractions.Services.Authentications;
 
 namespace ECommerce.Persistence
 {
@@ -40,6 +43,11 @@ namespace ECommerce.Persistence
 
             services.AddSingleton<IInvoiceFileReadRepository, InvoiceFileReadRepository>();
             services.AddScoped<IInvoiceFileWriteRepository, InvoiceFileWriteRepository>();
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthService, AuthService>();    
+            services.AddScoped<IExternalAuthentication, AuthService>();
+            services.AddScoped<IInternalAuthentication, AuthService>();
         }
     }
 }
