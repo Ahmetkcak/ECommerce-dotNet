@@ -10,5 +10,7 @@ namespace ECommerce.Application.Abstractions.Services.Authentications
     public interface IInternalAuthentication
     {
         Task<DTOs.Token> LoginAsycn(string userameOrEmail,string password,int accessTokenLifeTime);
+
+        Task<DTOs.Token> RefreshTokenLoginAsycn(string refreshToken);
     }
 }

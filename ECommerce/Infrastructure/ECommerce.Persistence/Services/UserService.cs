@@ -1,5 +1,6 @@
 ﻿using ECommerce.Application.Abstractions.Services;
 using ECommerce.Application.DTOs.User;
+using ECommerce.Application.Exceptions;
 using ECommerce.Domain.Entities.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -37,6 +38,17 @@ namespace ECommerce.Persistence.Services
                 foreach (var error in result.Errors)
                     response.Message += $"{error.Code} - {error.Description}";
             return response;
+        }
+
+        public async Task UpdateRefrestToken(User user, string refreshToken, DateTime accessTokenDate,int addOnAccessTokenDate)
+        {
+            if(user != null)
+            {
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenEndDate = accessTokenDate.AddSeconds(addOnAccessTokenDate);
+                await _userManager.UpdateAsync(user);
+            }
+            throw new NotFounUserException();
         }
     }
 }

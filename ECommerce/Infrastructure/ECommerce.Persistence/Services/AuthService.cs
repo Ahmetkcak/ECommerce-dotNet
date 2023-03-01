@@ -22,13 +22,15 @@ namespace ECommerce.Persistence.Services
         readonly ITokenHandler _tokenHandler;
         readonly IConfiguration _configuration;
         readonly SignInManager<User> _signInManager;
+        readonly IUserService _userService;
 
-        public AuthService(UserManager<User> userManager, ITokenHandler tokenHandler, IConfiguration configuration, SignInManager<User> signInManager)
+        public AuthService(UserManager<User> userManager, ITokenHandler tokenHandler, IConfiguration configuration, SignInManager<User> signInManager, IUserService userService)
         {
             _userManager = userManager;
             _tokenHandler = tokenHandler;
             _configuration = configuration;
             _signInManager = signInManager;
+            _userService = userService;
         }
 
         public async Task<Token> GoogleLoginAsycn(string idToken,int accessTokenLifeTime)
@@ -36,7 +38,7 @@ namespace ECommerce.Persistence.Services
 
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
-                Audience = new List<string> { _configuration["ExternalLoginSettings:Google:Client_ID"] }
+                Audience = new List<string> { _configuration["Google:Client_ID"] }
             };
 
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
@@ -64,13 +66,15 @@ namespace ECommerce.Persistence.Services
             }
 
             if (result)
+            {
                 await _userManager.AddLoginAsync(user, info);
+                Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
+                await _userService.UpdateRefrestToken(user, token.RefreshToken, token.Expiration, 10);
+                return token;
+            }
+                
             else
                 throw new Exception("Invalid external authentication.");
-
-            Token token = _tokenHandler.CreateAccessToken(5);
-
-            return token;
         }
 
         public async Task<Token> LoginAsycn(string userameOrEmail, string password, int accessTokenLifeTime)
@@ -86,9 +90,25 @@ namespace ECommerce.Persistence.Services
             if (result.Succeeded)
             {
                 Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
+                await _userService.UpdateRefrestToken(user, token.RefreshToken, token.Expiration, 10);
                 return token;
             }
-            throw new AuthenticationErrorException();
+            else
+                throw new AuthenticationErrorException();
+        }
+
+        public async Task<Token> RefreshTokenLoginAsycn(string refreshToken)
+        {
+           User? user = _userManager.Users.FirstOrDefault(u => u.RefreshToken== refreshToken);
+            if(user != null && user?.RefreshTokenEndDate > DateTime.UtcNow)
+            {
+                Token token = _tokenHandler.CreateAccessToken(15);
+                await _userService.UpdateRefrestToken(user,token.RefreshToken, token.Expiration, 15);
+                return token;
+            }
+            else
+                throw new NotFounUserException();
+
         }
     }
 }
