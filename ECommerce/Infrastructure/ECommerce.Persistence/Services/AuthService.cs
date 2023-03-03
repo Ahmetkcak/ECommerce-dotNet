@@ -66,15 +66,14 @@ namespace ECommerce.Persistence.Services
             }
 
             if (result)
-            {
                 await _userManager.AddLoginAsync(user, info);
-                Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
-                await _userService.UpdateRefrestToken(user, token.RefreshToken, token.Expiration, 10);
-                return token;
-            }
-                
+                       
             else
                 throw new Exception("Invalid external authentication.");
+
+            Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime,user);
+            //await _userService.UpdateRefreshToken(user, token.RefreshToken, token.Expiration, 10);
+            return token;
         }
 
         public async Task<Token> LoginAsycn(string userameOrEmail, string password, int accessTokenLifeTime)
@@ -89,8 +88,8 @@ namespace ECommerce.Persistence.Services
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             if (result.Succeeded)
             {
-                Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);
-                await _userService.UpdateRefrestToken(user, token.RefreshToken, token.Expiration, 10);
+                Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime,user);
+                //await _userService.UpdateRefreshToken(user, token.RefreshToken, token.Expiration, 10);
                 return token;
             }
             else
@@ -102,8 +101,8 @@ namespace ECommerce.Persistence.Services
            User? user = _userManager.Users.FirstOrDefault(u => u.RefreshToken== refreshToken);
             if(user != null && user?.RefreshTokenEndDate > DateTime.UtcNow)
             {
-                Token token = _tokenHandler.CreateAccessToken(15);
-                await _userService.UpdateRefrestToken(user,token.RefreshToken, token.Expiration, 15);
+                Token token = _tokenHandler.CreateAccessToken(15,user);
+                await _userService.UpdateRefreshToken(user,token.RefreshToken, token.Expiration, 15);
                 return token;
             }
             else

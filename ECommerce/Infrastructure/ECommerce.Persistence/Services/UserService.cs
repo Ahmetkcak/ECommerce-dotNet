@@ -40,7 +40,7 @@ namespace ECommerce.Persistence.Services
             return response;
         }
 
-        public async Task UpdateRefrestToken(User user, string refreshToken, DateTime accessTokenDate,int addOnAccessTokenDate)
+        public async Task UpdateRefreshToken(User user, string refreshToken, DateTime accessTokenDate,int addOnAccessTokenDate)
         {
             if(user != null)
             {

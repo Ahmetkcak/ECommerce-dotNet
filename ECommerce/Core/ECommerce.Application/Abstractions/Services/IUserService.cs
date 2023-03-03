@@ -11,6 +11,6 @@ namespace ECommerce.Application.Abstractions.Services
     public interface IUserService
     {
         Task<CreateUserResponse> CreateAsync(CreateUser model);
-        Task UpdateRefrestToken(User user,string refreshToken,DateTime accessTokenDate, int addOnAccessTokenDate);
+        Task UpdateRefreshToken(User user,string refreshToken,DateTime accessTokenDate, int addOnAccessTokenDate);
     }
 }
