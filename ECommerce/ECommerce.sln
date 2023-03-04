@@ -15,9 +15,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.WebAPI", "Presentation\ECommerce.WebAPI\ECommerce.WebAPI.csproj", "{593CA2B1-8973-4095-A1BA-71A565CD3B98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Application", "Core\ECommerce.Application\ECommerce.Application.csproj", "{39746786-E254-4D1C-9F05-64C40558DB84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.Application", "Core\ECommerce.Application\ECommerce.Application.csproj", "{39746786-E254-4D1C-9F05-64C40558DB84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Infrastructure", "Infrastructure\ECommerce.Infrastructure\ECommerce.Infrastructure.csproj", "{AE931C3F-5992-4850-8521-A7F4BE137F67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommerce.Infrastructure", "Infrastructure\ECommerce.Infrastructure\ECommerce.Infrastructure.csproj", "{AE931C3F-5992-4850-8521-A7F4BE137F67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.SignalR", "Infrastructure\ECommerce.SignalR\ECommerce.SignalR.csproj", "{C0EDD856-DB1D-45FE-8A1D-59322A1ACC4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{AE931C3F-5992-4850-8521-A7F4BE137F67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE931C3F-5992-4850-8521-A7F4BE137F67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE931C3F-5992-4850-8521-A7F4BE137F67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0EDD856-DB1D-45FE-8A1D-59322A1ACC4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0EDD856-DB1D-45FE-8A1D-59322A1ACC4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0EDD856-DB1D-45FE-8A1D-59322A1ACC4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0EDD856-DB1D-45FE-8A1D-59322A1ACC4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{593CA2B1-8973-4095-A1BA-71A565CD3B98} = {5FF6A974-8583-4820-9FE1-EE9BD6346AC5}
 		{39746786-E254-4D1C-9F05-64C40558DB84} = {1175C4A9-A820-4EB1-91EB-9AA4E3FE922B}
 		{AE931C3F-5992-4850-8521-A7F4BE137F67} = {808B3435-2A7C-4AD5-9DF1-24860A76469E}
+		{C0EDD856-DB1D-45FE-8A1D-59322A1ACC4A} = {808B3435-2A7C-4AD5-9DF1-24860A76469E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {00BF903E-FCEA-4299-A1A9-D8EB8419EDDF}
