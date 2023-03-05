@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Application.Features.Commands.RefreshTokenLogin
+namespace ECommerce.Application.Features.Commands.User.RefreshTokenLogin
 {
     public class RefreshTokenLoginCommandResponse
     {

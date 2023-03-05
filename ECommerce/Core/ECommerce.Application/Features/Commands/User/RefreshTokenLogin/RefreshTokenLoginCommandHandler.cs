@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Application.Features.Commands.RefreshTokenLogin
+namespace ECommerce.Application.Features.Commands.User.RefreshTokenLogin
 {
     public class RefreshTokenLoginCommandHandler : IRequestHandler<RefreshTokenLoginCommandRequest, RefreshTokenLoginCommandResponse>
     {
@@ -20,7 +20,7 @@ namespace ECommerce.Application.Features.Commands.RefreshTokenLogin
 
         public async Task<RefreshTokenLoginCommandResponse> Handle(RefreshTokenLoginCommandRequest request, CancellationToken cancellationToken)
         {
-            Token token =await _authService.RefreshTokenLoginAsycn(request.RefrestToken);
+            Token token = await _authService.RefreshTokenLoginAsycn(request.RefrestToken);
             return new()
             {
                 Token = token
