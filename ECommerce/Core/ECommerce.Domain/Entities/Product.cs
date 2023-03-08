@@ -14,5 +14,6 @@ namespace ECommerce.Domain.Entities
         public int Price { get; set; }
         public ICollection<Order> Orders { get; set; }
         public ICollection<ProductImage> ProductImages { get;set; }
+        public ICollection<BasketItem> BasketItems { get; set; }
     }
 }
