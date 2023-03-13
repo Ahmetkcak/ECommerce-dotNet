@@ -1,4 +1,8 @@
-﻿using ECommerce.Application.Repositories.Abstracts;
+﻿using ECommerce.Application.Abstractions.Services;
+using ECommerce.Application.Features.Commands.Order.CreateOrder;
+using ECommerce.Application.Repositories.Abstracts;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,21 +10,21 @@ namespace ECommerce.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Admin")]
     public class OrdersController : ControllerBase
     {
-        private IOrderWriteRepository _orderWriteRepository;
+        readonly IMediator _mediator;
 
-        public OrdersController(IOrderWriteRepository orderWriteRepository)
+        public OrdersController(IMediator mediator)
         {
-            _orderWriteRepository = orderWriteRepository;
+            _mediator = mediator;
         }
 
-        [HttpGet]
-        public async Task Add()
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder(CreateOrderCommandRequest createOrderCommandRequest)
         {
-            await _orderWriteRepository.AddAsycn(new() { Description="Evlere özel",Address="Antalya",CustomerId=2});
-            await _orderWriteRepository.AddAsycn(new() { Description = "Çalışanlara özel", Address = "Bursa", CustomerId = 2 });
-            await _orderWriteRepository.SaveAsycn();
+            CreateOrderCommandResponse response = await _mediator.Send(createOrderCommandRequest);
+            return Ok(response);
         }
     }
 }
