@@ -10,5 +10,6 @@ namespace ECommerce.Application.Abstractions.Services
     public interface IOrderService
     {
         Task CreateOrderAsync(CreateOrder createOrder);
+        Task<ListOrder> GetAllOrdersAsync(int page,int size);
     }
 }
