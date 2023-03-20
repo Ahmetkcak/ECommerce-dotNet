@@ -14,6 +14,7 @@ using ECommerce.Domain.Entities.Identity;
 using ECommerce.Application.Abstractions.Services;
 using ECommerce.Persistence.Services;
 using ECommerce.Application.Abstractions.Services.Authentications;
+using Microsoft.AspNetCore.Identity;
 
 namespace ECommerce.Persistence
 {
@@ -24,7 +25,9 @@ namespace ECommerce.Persistence
             //services.AddSingleton<IProductService, ProductService>();
             services.AddDbContext<ECommerceDbContext>(options => options.UseNpgsql(Configuration.ConnectionString),ServiceLifetime.Singleton);
 
-            services.AddIdentity<User, Role>().AddEntityFrameworkStores<ECommerceDbContext>();
+            services.AddIdentity<User, Role>().AddEntityFrameworkStores<ECommerceDbContext>()
+                .AddDefaultTokenProviders();
+
 
             services.AddScoped<ICustomerReadRepository, CustomerReadRepository>();
             services.AddScoped<ICustomerWriteRepository, CustomerWriteRepository>();

@@ -3,10 +3,12 @@ using ECommerce.Application.Abstractions.Token;
 using ECommerce.Application.DTOs;
 using ECommerce.Application.Exceptions;
 using ECommerce.Application.Features.Commands.User.LoginUser;
+using ECommerce.Application.Helpers;
 using ECommerce.Domain.Entities.Identity;
 using Google.Apis.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -23,14 +25,16 @@ namespace ECommerce.Persistence.Services
         readonly IConfiguration _configuration;
         readonly SignInManager<User> _signInManager;
         readonly IUserService _userService;
+        readonly IMailService _mailService;
 
-        public AuthService(UserManager<User> userManager, ITokenHandler tokenHandler, IConfiguration configuration, SignInManager<User> signInManager, IUserService userService)
+        public AuthService(UserManager<User> userManager, ITokenHandler tokenHandler, IConfiguration configuration, SignInManager<User> signInManager, IUserService userService, IMailService mailService)
         {
             _userManager = userManager;
             _tokenHandler = tokenHandler;
             _configuration = configuration;
             _signInManager = signInManager;
             _userService = userService;
+            _mailService = mailService;
         }
 
         public async Task<Token> GoogleLoginAsycn(string idToken,int accessTokenLifeTime)
@@ -96,18 +100,40 @@ namespace ECommerce.Persistence.Services
                 throw new AuthenticationErrorException();
         }
 
+        public async Task PasswordResetAsync(string email)
+        {
+            User user = await _userManager.FindByEmailAsync(email);
+            if(user != null)
+            {
+                string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                resetToken = resetToken.UrlEncode();
+                await _mailService.SendPasswordResetMailAsync(email,user.Id, resetToken);
+            }
+        }
+
         public async Task<Token> RefreshTokenLoginAsycn(string refreshToken)
         {
            User? user = _userManager.Users.FirstOrDefault(u => u.RefreshToken== refreshToken);
             if(user != null && user?.RefreshTokenEndDate > DateTime.UtcNow)
             {
                 Token token = _tokenHandler.CreateAccessToken(15,user);
-                await _userService.UpdateRefreshToken(user,token.RefreshToken, token.Expiration, 15);
+                await _userService.UpdateRefreshTokenAsync(user,token.RefreshToken, token.Expiration, 15);
                 return token;
             }
             else
                 throw new NotFounUserException();
 
+        }
+
+        public async Task<bool> VerifyResetTokenAsync(string resetToken, int userId)
+        {
+            User user = await _userManager.FindByIdAsync(userId.ToString());
+            if(user != null)
+            {
+                resetToken = resetToken.UrlDecode();
+                return await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", resetToken);  
+            }
+            return false;
         }
     }
 }
