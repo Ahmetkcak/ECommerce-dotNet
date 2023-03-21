@@ -16,11 +16,23 @@ namespace ECommerce.Persistence.Services
     {
         readonly IOrderWriteRepository _orderWriteRepository;
         readonly IOrderReadRepository _orderReadRepository;
+        readonly ICompletedOrderWriteRepository _completedOrderWriteRepository;
 
-        public OrderService(IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository)
+        public OrderService(IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository, ICompletedOrderWriteRepository completedOrderWriteRepository)
         {
             _orderWriteRepository = orderWriteRepository;
             _orderReadRepository = orderReadRepository;
+            _completedOrderWriteRepository = completedOrderWriteRepository;
+        }
+
+        public async Task CompleteOrderAsync(int id)
+        {
+            Order order = await _orderReadRepository.GetByIdAsycn(id);
+            if(order != null)
+            {
+                await _completedOrderWriteRepository.AddAsycn(new(){OrderId = id});
+                await _completedOrderWriteRepository.SaveAsycn();
+            }
         }
 
         public async Task CreateOrderAsync(CreateOrder createOrder)
