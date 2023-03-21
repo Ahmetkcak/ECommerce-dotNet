@@ -28,6 +28,7 @@ namespace ECommerce.Application.Features.Queries.Order.GetByIdOrder
                 BasketItems = data.BasketItems,
                 CreatedDate = data.CreatedDate,
                 Description = data.Description,
+                Completed = data.Completed
             };
         }
     }
