@@ -12,6 +12,6 @@ namespace ECommerce.Application.Abstractions.Services
         Task CreateOrderAsync(CreateOrder createOrder);
         Task<ListOrder> GetAllOrdersAsync(int page,int size);
         Task<SingleOrder> GetOrderByIdAsync(int id);
-        Task CompleteOrderAsync(int id);
+        Task<(bool,CompletedOrderDto)> CompleteOrderAsync(int id);
     }
 }

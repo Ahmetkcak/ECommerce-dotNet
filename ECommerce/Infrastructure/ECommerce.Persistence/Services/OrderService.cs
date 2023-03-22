@@ -27,14 +27,25 @@ namespace ECommerce.Persistence.Services
             _completedOrderReadRepository = completedOrderReadRepository;
         }
 
-        public async Task CompleteOrderAsync(int id)
+        public async Task<(bool, CompletedOrderDto)> CompleteOrderAsync(int id)
         {
-            Order order = await _orderReadRepository.GetByIdAsycn(id);
+            Order? order = await _orderReadRepository.Table
+                .Include(o => o.Basket)
+                .ThenInclude(b => b.User)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
             if(order != null)
             {
                 await _completedOrderWriteRepository.AddAsycn(new(){OrderId = id});
-                await _completedOrderWriteRepository.SaveAsycn();
+                return (await _completedOrderWriteRepository.SaveAsycn() > 0, new()
+                {
+                    OrderCode = order.OrderCode,
+                    OrderDate = order.CreatedDate,
+                    UserName = order.Basket.User.UserName,
+                    Emil = order.Basket.User.Email
+                });
             }
+            return (false,null);
         }
 
         public async Task CreateOrderAsync(CreateOrder createOrder)
@@ -101,7 +112,7 @@ namespace ECommerce.Persistence.Services
                                     .ThenInclude(bi => bi.Product);
             var data2 = await (from order in data
                         join completedOrder in _completedOrderReadRepository.Table
-                        on order.Id equals completedOrder.Id into co
+                        on order.Id equals completedOrder.OrderId into co
                         from _co in co.DefaultIfEmpty()
                         select new
                         {

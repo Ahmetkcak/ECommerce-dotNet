@@ -57,5 +57,13 @@ namespace ECommerce.Infrastructure.Services
 
             await SendMailAsync(to, "Şifre Yenileme Talebi", mail.ToString());
         }
+
+        public async Task SendCompletedOrderMailAsync(string to, string orderCode, DateTime orderDate, string userName)
+        {
+            string mail = $"Merhaba {userName}<br>" +
+                $"{orderDate} tarihinde vermiş olduğunuz {orderCode} kodlu sipariş tamamlanmış ve kargo firmasına teslim edilmiştir.";
+            await SendMailAsync(to, $"{orderCode} numaralı siparişiniz tamamlandı.", mail);
+
+        }
     }
 }
